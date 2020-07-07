@@ -1,17 +1,30 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import {createStore,applyMiddleware, combineReducers} from 'redux'
+import App from './components/App';
+import rootReducer from './reducers';
+const logConsole=function({dispatch,getState}){
+  return function(next){
+    return function(action){
+      console.log("Action  type ",action.type)
+      next(action)
+    }
+  }
+}
+const store=createStore(rootReducer,applyMiddleware(logConsole))
 
+console.log(store)
+console.log(store.getState())
+store.dispatch({
+  type:'ADD_MOVIES',
+  movies:[{name:'superman'}]
+})
+console.log('After state',store.getState())
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <App store={store} />
   </React.StrictMode>,
   document.getElementById('root')
 );
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+
